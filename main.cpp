@@ -1,9 +1,7 @@
 #include "raylib.h"
-#include <cmath>
-#include <iostream>
 
 //===================================================================
-//PARTICLE LIFE SIM 3D (Using Raylib)
+//PARTICLE LIFE SIM 3D (Using Raylib) 
 //===================================================================
 
 
@@ -17,34 +15,35 @@ int main() {
     int screenWidth = 3000; 
     int screenHeight = 2000;
     InitWindow(screenWidth, screenHeight, "Particle Life");
-
-    int textSize = 40; 
-
-    const char* msg("WELCOME TO PARTICLE LIFE SIM");
-    int msgWidth = MeasureText(msg, textSize);
-    int msgX = (screenWidth - msgWidth) / 2;
-    int msgY = screenHeight / 2 - textSize / 2;
-
     SetTargetFPS(60);
+
+    Camera3D camera = {0};
+    camera.fovy = 90.0f;
+    camera.position = (Vector3){10.0f, 10.0f, 10.0f};
+    camera.up = (Vector3){0.0f, 1.0f, 0.0f};
+    camera.target = (Vector3){0.0f, 0.0f, 0.0f};
+    camera.projection = CAMERA_PERSPECTIVE;
+
 
     //===============================================================
     //Main loop
 
     while (!WindowShouldClose()) {
-        //updates
+        //Updates
+        UpdateCamera(&camera, 3);
 
         BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-        DrawText(msg, msgX, msgY, textSize, BLACK);
-
+            ClearBackground(BLACK);
+            BeginMode3D(camera); 
+                DrawGrid(10, 10.0f);
+            EndMode3D();  
 
         EndDrawing();
 
     }
 
     //===============================================================
-    //End
+    //End of Loop
 
     CloseWindow();
     return 0;
