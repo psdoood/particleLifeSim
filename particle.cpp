@@ -6,7 +6,7 @@ particle::particle(Vector3 p, Vector3 v, Color c)
 
 //Draws the particle based on its current position.
 void particle::drawParticle(){
-
+    DrawSphereEx(this->pos, 0.1f, 3, 3, this->color);
 }
 
 //Updates the position, velocity, etc for the current particle.

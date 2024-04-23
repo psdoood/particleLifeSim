@@ -4,7 +4,7 @@
     "command": "cmd",
     "args": [
         "/c",
-        "SET PATH=C:\\raylib\\w64devkit\\bin;%PATH% && g++ -o ${workspaceFolder}\\particleLife.exe ${workspaceFolder}\\main.cpp -IC:\\raylib\\raylib\\src -LC:\\raylib\\raylib\\src -lraylib -lopengl32 -lgdi32 -lwinmm -std=c++17 -Wall -DPLATFORM_DESKTOP -s -static -Os"
+        "SET PATH=C:\\raylib\\w64devkit\\bin;%PATH% && g++ -o ${workspaceFolder}\\particleLife.exe ${workspaceFolder}\\main.cpp ${workspaceFolder}\\particle.cpp -IC:\\raylib\\raylib\\src -LC:\\raylib\\raylib\\src -lraylib -lopengl32 -lgdi32 -lwinmm -std=c++17 -Wall -DPLATFORM_DESKTOP -s -static -Os"
     ],
     "group": {
         "kind": "build",
