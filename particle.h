@@ -3,16 +3,17 @@
 #include "raylib.h"
 
 class particle{
-    private:
-        Vector3 pos;
-        Vector3 velocity;
-        Color color;
     public:
-        particle(Vector3 p, Vector3 v, Color c);
+        particle(Vector3 p, Vector3 v, int c);
         ~particle(){};
         void drawParticle();
         void updateParticle(float time);
-        void colorInteraction(const particle& p);
+        void colorInteraction(const particle& p, const float (&attrM)[6][6]);
+        bool operator==(particle const& right);
+        Vector3 pos;
+        Vector3 velocity;
+        const int color;
+        
 };
 
 
