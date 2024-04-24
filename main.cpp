@@ -7,7 +7,7 @@
 //===================================================================
 
 void initParticles(int maxP, std::vector<particle>& pVector);
-void drawParticles(std::vector<particle> pVector);
+void drawParticles(std::vector<particle>& pVector);
 void drawBorder();
 
 int main() {
@@ -15,7 +15,7 @@ int main() {
     //Initializations
 
     //Change these two values based on your current screen dpi if you want fullscreen.
-    //GetMonitorWidth() and GetMonitorHeight() seem to cause problems for me.
+    //GetMonitorWidth() and GetMonitorHeight() seem to cause problems for me (due to my dpi).
     int screenWidth = 3000; 
     int screenHeight = 2000;
     InitWindow(screenWidth, screenHeight, "Particle Life");
@@ -32,7 +32,7 @@ int main() {
 
     //Particle settings
     std::vector<particle> particles;
-    int maxParticles = 700;
+    int maxParticles = 1200;
     initParticles(maxParticles, particles);
 
     //===============================================================
@@ -41,6 +41,7 @@ int main() {
     while (!WindowShouldClose()) {
         //Updates
         UpdateCamera(&camera, 4);
+        
 
         BeginDrawing();
            
@@ -68,7 +69,7 @@ int main() {
 void initParticles(int maxP, std::vector<particle>& pVector){
     for(int i = 0; i < maxP; i++){
         float posX = GetRandomValue(-50, 50);
-        float posY = GetRandomValue(0, 20);
+        float posY = GetRandomValue(0, 30);
         float posZ = GetRandomValue(-50, 50);
         int colNum = GetRandomValue(1, 6);
         Color col;
@@ -95,14 +96,21 @@ void initParticles(int maxP, std::vector<particle>& pVector){
                 col = BLACK;
         }
 
-        particle p((Vector3){posX, posY, posZ}, (Vector3){0.0f, 0.0f, 0.0f}, col);
+        Vector3 velocity = {
+        (float)GetRandomValue(-5, 5),
+        (float)GetRandomValue(-5, 5),
+        (float)GetRandomValue(-5, 5)
+        };
+
+        particle p((Vector3){posX, posY, posZ}, velocity, col);
         pVector.push_back(p);
     }
 }
 
-void drawParticles(std::vector<particle> pVector){
+void drawParticles(std::vector<particle>& pVector){
     for(auto& p : pVector){
         p.drawParticle();
+        p.updateParticle(GetFrameTime());
     }
 }
 
@@ -112,13 +120,13 @@ void drawBorder(){
     DrawLine3D((Vector3){-50.0f, 0.0f, 50.0f}, (Vector3){50.0f, 0.0f, 50.0f}, LIGHTGRAY);
     DrawLine3D((Vector3){50.0f, 0.0f, 50.0f}, (Vector3){50.0f, 0.0f, -50.0f}, LIGHTGRAY);
     
-    DrawLine3D((Vector3){-50.0f, 20.0f, -50.0f}, (Vector3){-50.0f, 20.0f, 50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){-50.0f, 20.0f, -50.0f}, (Vector3){50.0f, 20.0f, -50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){-50.0f, 20.0f, 50.0f}, (Vector3){50.0f, 20.0f, 50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){50.0f, 20.0f, 50.0f}, (Vector3){50.0f, 20.0f, -50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){-50.0f, 30.0f, -50.0f}, (Vector3){-50.0f, 30.0f, 50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){-50.0f, 30.0f, -50.0f}, (Vector3){50.0f, 30.0f, -50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){-50.0f, 30.0f, 50.0f}, (Vector3){50.0f, 30.0f, 50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){50.0f, 30.0f, 50.0f}, (Vector3){50.0f, 30.0f, -50.0f}, LIGHTGRAY);
     
-    DrawLine3D((Vector3){-50.0f, 0.0f, -50.0f}, (Vector3){-50.0f, 20.0f, -50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){50.0f, 0.0f, -50.0f}, (Vector3){50.0f, 20.0f, -50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){-50.0f, 0.0f, 50.0f}, (Vector3){-50.0f, 20.0f, 50.0f}, LIGHTGRAY);
-    DrawLine3D((Vector3){50.0f, 0.0f, 50.0f}, (Vector3){50.0f, 20.0f, 50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){-50.0f, 0.0f, -50.0f}, (Vector3){-50.0f, 30.0f, -50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){50.0f, 0.0f, -50.0f}, (Vector3){50.0f, 30.0f, -50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){-50.0f, 0.0f, 50.0f}, (Vector3){-50.0f, 30.0f, 50.0f}, LIGHTGRAY);
+    DrawLine3D((Vector3){50.0f, 0.0f, 50.0f}, (Vector3){50.0f, 30.0f, 50.0f}, LIGHTGRAY);
 }

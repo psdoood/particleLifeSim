@@ -11,7 +11,7 @@ class particle{
         particle(Vector3 p, Vector3 v, Color c);
         ~particle(){};
         void drawParticle();
-        void updateParticle();
+        void updateParticle(float time);
         void colorInteraction(const particle& p);
 };
 
