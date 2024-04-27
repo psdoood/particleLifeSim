@@ -38,8 +38,7 @@ int main() {
     camera.projection = CAMERA_PERSPECTIVE;
 
     //Particle settings
-    int attractionRadius = 10;
-    int separationDistance = 3;
+    int attractionRadius = 25;
     int maxParticles = 100;
     std::vector<particle> particles;
     float attractionMat[6][6];

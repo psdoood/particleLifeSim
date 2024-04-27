@@ -31,14 +31,14 @@ void particle::drawParticle(){
         default:
             col = BLACK;
         };
-    //DrawSphereEx(this->pos, 0.08f, 3, 3, col);
-    DrawCircle3D(this->pos, 0.08f, Vector3{0.0, 1.0, 0.0}, 90.0f, col);
+    DrawSphereEx(this->pos, 0.08f, 3, 3, col);
+    //DrawCircle3D(this->pos, 0.08f, Vector3{0.0, 1.0, 0.0}, 90.0f, col);
 }
 
 //=========================================================================================
 //Updates the position, velocity, etc for the current particle.
 void particle::updateParticle(float time){
-    float damping = 0.9; 
+    float damping = 0.9f; 
     this->velocity.x *= damping;
     this->velocity.y *= damping;
     this->velocity.z *= damping;
@@ -70,14 +70,26 @@ void particle::updateParticle(float time){
 //=========================================================================================
 //Determines how a particle should react based on (other) particle p (within radius).
 void particle::colorInteraction(const particle& p, const float (&attrM)[6][6]){
-    Vector3 directionVec = Vector3Subtract(this->pos, p.pos);
-    Vector3 nDirectionVec = Vector3Normalize(directionVec);
-    float attraction = attrM[this->color][p.color] * .01;
-    Vector3 forceVec = Vector3Scale(nDirectionVec, attraction);
-    this->velocity.x += forceVec.x;
-    this->velocity.y += forceVec.y;
-    this->velocity.z += forceVec.z;
+    Vector3 directionVec = Vector3Subtract(p.pos, this->pos);
+    float distance = Vector3Length(directionVec);
+
+    if (distance == 0) {
+        return; 
+    }
+    Vector3 nDirection = Vector3Normalize(directionVec);
+    float scaledAttraction = attrM[this->color - 1][p.color - 1] * 0.01f;
+    float force;
+    float minDistance = 3.0f;
+    if (distance < minDistance) {
+        force = -scaledAttraction * (minDistance / distance - 1);
+    } else {
+        force = scaledAttraction;
+    }
+
+    Vector3 forceVec = Vector3Scale(nDirection, force);
+    this->velocity = Vector3Add(this->velocity, forceVec);
 }
+
 
 //=========================================================================================
 //Operator overload for ==.
