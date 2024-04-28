@@ -3,7 +3,12 @@
 
 //=========================================================================================
 particle::particle(Vector3 p, Vector3 v, int c) 
-: pos(p), velocity(v), color(c){}
+: pos(p), velocity(v), color(c){
+    int x = -10;
+    int y = -10;
+    int z = -10;
+    this->currentHash = std::make_tuple(x, y, z);
+}
 
 //=========================================================================================
 //Draws the particle based on its current position.
@@ -38,7 +43,7 @@ void particle::drawParticle(){
 //=========================================================================================
 //Updates the position, velocity, etc for the current particle.
 void particle::updateParticle(float time){
-    float damping = 0.9f; 
+    float damping = 0.95f; 
     this->velocity.x *= damping;
     this->velocity.y *= damping;
     this->velocity.z *= damping;
@@ -73,14 +78,11 @@ void particle::colorInteraction(const particle& p, const float (&attrM)[6][6]){
     Vector3 directionVec = Vector3Subtract(p.pos, this->pos);
     float distance = Vector3Length(directionVec);
 
-    if (distance == 0) {
-        return; 
-    }
     Vector3 nDirection = Vector3Normalize(directionVec);
-    float scaledAttraction = attrM[this->color - 1][p.color - 1] * 0.01f;
+    float scaledAttraction = attrM[this->color - 1][p.color - 1] * 0.1;
     float force;
     float minDistance = 3.0f;
-    if (distance < minDistance) {
+    if (distance <= minDistance) {
         force = -scaledAttraction * (minDistance / distance - 1);
     } else {
         force = scaledAttraction;
@@ -94,7 +96,5 @@ void particle::colorInteraction(const particle& p, const float (&attrM)[6][6]){
 //=========================================================================================
 //Operator overload for ==.
 bool particle::operator==(particle const& right){
-    return (this->pos.x == right.pos.x && this->pos.y == right.pos.y && 
-            this->pos.z == right.pos.z && this->velocity.x == right.velocity.x && 
-            this->velocity.y == right.velocity.y && this->velocity.z == right.velocity.z);
+    return (this->id == right.id);
 }

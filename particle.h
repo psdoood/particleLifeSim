@@ -1,6 +1,7 @@
 #ifndef PARTICLE
 #define PARTICLE
 #include "raylib.h"
+#include <tuple>
 
 class particle{
     public:
@@ -12,7 +13,9 @@ class particle{
         bool operator==(particle const& right);
         Vector3 pos;
         Vector3 velocity;
-        const int color;
+        int color = -1;
+        int id = -1;
+        std::tuple <int, int, int> currentHash;
         
 };
 
