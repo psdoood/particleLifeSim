@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include "particle.h"
 #include <vector>
 #include <map>
@@ -44,36 +45,21 @@ int main() {
     camera.projection = CAMERA_PERSPECTIVE;
 
     //Particle settings
-    int attractionRadius = 25;
-    int maxParticles = 800;
+    int attractionRadius = 25;//25
+    int maxParticles = 1600;
     std::vector<particle> particles;
     float attractionMat[6][6];
     std::map <std::tuple <int, int, int>, std::vector<particle>> sectionMap; 
     int sectionSize = 25;
     int ySectionSize = 15;
     initParticles(maxParticles, particles, attractionMat, sectionMap, sectionSize, ySectionSize);
-
-    //For testing higher particle counts without bottlenecking
-    int frameCounter = 0;
-    int updateTime = 1;
     
     //Main loop
-    while (!WindowShouldClose()) {
-        //Updates
+    while (!WindowShouldClose()){
+        
         UpdateCamera(&camera, 4);
-
         if(IsKeyDown(KEY_SPACE)){
             changeAttraction(attractionMat);
-        }
-
-        //This (using a frame update time) was for testing purposes but I decided to leave it
-        if(frameCounter >= updateTime){
-            for(auto& particle : particles){
-                particle.updateParticle(GetFrameTime());
-            }
-            updateSections(sectionMap, particles, sectionSize, ySectionSize);
-            pWithinRadius(attractionRadius, particles, attractionMat, sectionMap); 
-            frameCounter = 0;
         }
 
         //Render loop
@@ -83,14 +69,16 @@ int main() {
             BeginMode3D(camera); 
                 drawBorder();
                 for(auto& particle : particles){
+                    particle.updateParticle(GetFrameTime());
                     particle.drawParticle(); 
                 }
+                updateSections(sectionMap, particles, sectionSize, ySectionSize);
+                pWithinRadius(attractionRadius, particles, attractionMat, sectionMap); 
             EndMode3D();  
             DrawFPS(20, 20);
             DrawText(" - SPACE to change attraction values", 100, 20, 20, GREEN);
 
         EndDrawing();
-        frameCounter++;
     }
 
     CloseWindow();
@@ -131,7 +119,7 @@ void changeAttraction(float (&attrM)[6][6]){
 }
 
 //=========================================================================================
-//Gives a random float value between 0.0 and 1.0
+//Gives a random float value between 0.0 and 1.0.
 float getAttractionVal(){
     static std::mt19937 random(std::random_device{}());
     static std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
@@ -139,10 +127,11 @@ float getAttractionVal(){
 }
 
 //=========================================================================================
-//Checks for particles in the same and adjasent sections (to avoid checking all particles)
+//Checks for particles in the same and adjasent sections (to avoid checking all particles).
 void pWithinRadius(const int& radius, std::vector<particle>& pVector, const float (&attrM)[6][6], std::map <std::tuple <int, int, int>, std::vector<particle>>& map){
     std::vector<std::tuple <int,int,int>> hashKeys;
     for(auto& p : pVector){
+        Vector3 totalForce = Vector3Zero();
         hashKeys.clear();
         int x, y, z;
         std::tie(x, y, z) = p.currentHash;
@@ -160,11 +149,13 @@ void pWithinRadius(const int& radius, std::vector<particle>& pVector, const floa
                 for(auto& otherP : it->second){
                 if(p.id == otherP.id) continue; 
                 if(distanceCalc(radius, p, otherP)){
-                    p.colorInteraction(otherP, attrM); 
-                    }
+                    Vector3 otherForce = p.colorInteraction(otherP, attrM); 
+                    totalForce = Vector3Add(totalForce, otherForce);
+                  }
                 }
             }
         }  
+        p.force = totalForce;
     }
 }
 
@@ -176,7 +167,7 @@ bool distanceCalc(const int& radius, const particle& p1, const particle& p2){
 }
 
 //=========================================================================================
-//Adds particles to their new map sections (goal to avoid bottlenecks)
+//Adds particles to their new map sections (goal to avoid bottlenecks).
 void updateSections(std::map <std::tuple <int, int, int>, std::vector<particle>>& map, std::vector<particle>& pVector, int mapSectionSize, int ySectionSize){
     for(auto& p : pVector){
         std::tuple sectionHash = posHashKey(p, mapSectionSize, ySectionSize);
@@ -215,7 +206,7 @@ std::tuple <int, int, int> posHashKey(const particle& p, int mapSectionSize, int
 }
 
 //=========================================================================================
-//Draws a box that contains the particles.
+//Draws the box that contains the particles.
 void drawBorder(){
     DrawLine3D((Vector3){-50.0f, 0.0f, -50.0f}, (Vector3){-50.0f, 0.0f, 50.0f}, LIGHTGRAY);
     DrawLine3D((Vector3){-50.0f, 0.0f, -50.0f}, (Vector3){50.0f, 0.0f, -50.0f}, LIGHTGRAY);
